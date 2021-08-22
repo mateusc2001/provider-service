@@ -12,6 +12,7 @@ import { locationRoute } from './provedor/routes/location.route';
 import { chatSettingsRoute } from './provedor/routes/chat-settings.route';
 import { loginRoute } from './provedor/routes/login.route';
 import bodyParser from 'body-parser';
+import {leadsRoute} from "./provedor/routes/leads.route";
 
 class App {
     public express: express.Application;
@@ -37,7 +38,8 @@ class App {
         mongoose.connect(uri, {
             useUnifiedTopology: true,
             useNewUrlParser: true,
-            useCreateIndex: true
+            useCreateIndex: true,
+            useFindAndModify: false
         });
     }
 
@@ -64,6 +66,7 @@ class App {
         this.express.use(origemApi.concat('/location'), locationRoute);
         this.express.use(origemApi.concat('/chat-settings'), chatSettingsRoute);
         this.express.use(origemApi.concat('/login'), loginRoute);
+        this.express.use(origemApi.concat('/leads'), leadsRoute);
     }
 }
 

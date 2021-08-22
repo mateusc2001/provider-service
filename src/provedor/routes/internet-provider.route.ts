@@ -24,6 +24,8 @@ internetProviderRoute.post('/', async (req: Request, res: Response) => {
         const newUser = (await UserService.create(Builder<UserModel>()
             .username(body.username)
             .password(body.password)
+            .firstName(body.firstName)
+            .lastName(body.lastName)
             .build()));
 
         const newProviderSettings = (await InternetProviderSettingsService.create(Builder<InternetProviderSettingsModel>()
@@ -48,7 +50,6 @@ internetProviderRoute.post('/', async (req: Request, res: Response) => {
 internetProviderRoute.get('/:providerId', async (req: Request, res: Response) => {
     const response = await internetProviderEntity
         .findById(req.params.providerId)
-        .populate('users')
         .populate(
             {
                 path: 'chatSettings',
@@ -59,7 +60,8 @@ internetProviderRoute.get('/:providerId', async (req: Request, res: Response) =>
             }
         )
         .populate('providerSettings')
-        .populate('metrics');
+        .populate('metrics')
+        .select(['metrics', 'providerSettings', 'chatSettings', 'id']);
     res.send(response);
 });
 
@@ -80,6 +82,21 @@ internetProviderRoute.put('/add/user/:providerId', async (req: Request, res: Res
 });
 
 internetProviderRoute.get('', async (req: Request, res: Response) => {
-    res.json(await internetProviderEntity.find().populate('users'));
+    res.json(await internetProviderEntity.find()
+        .select(['metrics', 'providerSettings', 'chatSettings', 'id'])
+        .populate('metrics')
+        .populate('providerSettings')
+        .populate('chatSettings'));
+});
+
+internetProviderRoute.get('/chat/layout-settings/:providerId', async (req: Request, res: Response) => {
+    const internetProvider = await internetProviderEntity.findById(req.params.providerId).populate(
+        {
+            path: 'chatSettings',
+            select: ['image', 'primaryColor']
+        }
+
+    );
+    res.json(internetProvider?.chatSettings);
 });
 

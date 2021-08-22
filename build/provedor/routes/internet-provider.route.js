@@ -66,6 +66,8 @@ exports.internetProviderRoute.post('/', function (req, res) { return __awaiter(v
                 return [4 /*yield*/, user_service_1.UserService.create(builder_pattern_1.Builder()
                         .username(body.username)
                         .password(body.password)
+                        .firstName(body.firstName)
+                        .lastName(body.lastName)
                         .build())];
             case 3:
                 newUser = (_c.sent());
@@ -102,7 +104,6 @@ exports.internetProviderRoute.get('/:providerId', function (req, res) { return _
         switch (_a.label) {
             case 0: return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity
                     .findById(req.params.providerId)
-                    .populate('users')
                     .populate({
                     path: 'chatSettings',
                     populate: {
@@ -111,7 +112,8 @@ exports.internetProviderRoute.get('/:providerId', function (req, res) { return _
                     }
                 })
                     .populate('providerSettings')
-                    .populate('metrics')];
+                    .populate('metrics')
+                    .select(['metrics', 'providerSettings', 'chatSettings', 'id'])];
             case 1:
                 response = _a.sent();
                 res.send(response);
@@ -147,9 +149,25 @@ exports.internetProviderRoute.get('', function (req, res) { return __awaiter(voi
         switch (_c.label) {
             case 0:
                 _b = (_a = res).json;
-                return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity.find().populate('users')];
+                return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity.find()
+                        .populate(['metrics', 'providerSettings', 'chatSettings', 'id'])];
             case 1:
                 _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.internetProviderRoute.get('/chat/layout-settings/:providerId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var internetProvider;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity.findById(req.params.providerId).populate({
+                    path: 'chatSettings',
+                    select: ['image', 'primaryColor']
+                })];
+            case 1:
+                internetProvider = _a.sent();
+                res.json(internetProvider === null || internetProvider === void 0 ? void 0 : internetProvider.chatSettings);
                 return [2 /*return*/];
         }
     });

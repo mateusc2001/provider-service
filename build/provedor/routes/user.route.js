@@ -82,3 +82,20 @@ exports.userRoute.get('/:userId', function (req, res) { return __awaiter(void 0,
         }
     });
 }); });
+exports.userRoute.put('', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                userId = req.body.id;
+                return [4 /*yield*/, user_service_1.UserService.update(req.body, userId)];
+            case 1:
+                _c.sent();
+                _b = (_a = res).json;
+                return [4 /*yield*/, user_service_1.UserService.findById(userId)];
+            case 2:
+                _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); });

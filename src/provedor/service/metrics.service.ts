@@ -1,4 +1,5 @@
 import { metricsEntity } from "../schemas/metrics.schema";
+import {leadsEntity} from "../schemas/leads.schema";
 
 export class MetricsService {
     public static create(newMetric: any) {
@@ -10,7 +11,8 @@ export class MetricsService {
     }
 
     public static findById(id: string) {
-        return metricsEntity.findById(id);
+        return metricsEntity.findById(id)
+            .populate('leads');
     }
 
     public static addImpression(newImpression: any, id: string) {
@@ -22,8 +24,10 @@ export class MetricsService {
         );
     }
 
-    public static addConversation(newConversation: any, id: string) {
-        return metricsEntity.updateOne(
+    public static async addConversation(newConversation: any, id: string) {
+        const leads = await leadsEntity.create({});
+        newConversation.leads = leads?.id;
+        return metricsEntity.findOneAndUpdate(
             {
                 _id: id
             },
@@ -34,9 +38,8 @@ export class MetricsService {
     public static async addEtapa(novaEtapa: any, metricId: string, conversationId: string) {
         const metric = await metricsEntity.findById(metricId);
     
-        const conversation = await metric?.conversations.find(item => {
-            return item._id == conversationId;
-        });
+        const conversation = await metric?.conversations.find(item => item._id == conversationId);
+
         if (!!conversation) {
             conversation.etapas.push(novaEtapa);
         }

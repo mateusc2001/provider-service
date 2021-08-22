@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MetricsService = void 0;
 var metrics_schema_1 = require("../schemas/metrics.schema");
+var leads_schema_1 = require("../schemas/leads.schema");
 var MetricsService = /** @class */ (function () {
     function MetricsService() {
     }
@@ -48,7 +49,8 @@ var MetricsService = /** @class */ (function () {
         return metrics_schema_1.metricsEntity.find();
     };
     MetricsService.findById = function (id) {
-        return metrics_schema_1.metricsEntity.findById(id);
+        return metrics_schema_1.metricsEntity.findById(id)
+            .populate('leads');
     };
     MetricsService.addImpression = function (newImpression, id) {
         return metrics_schema_1.metricsEntity.updateOne({
@@ -56,9 +58,20 @@ var MetricsService = /** @class */ (function () {
         }, { $push: { impressions: newImpression } });
     };
     MetricsService.addConversation = function (newConversation, id) {
-        return metrics_schema_1.metricsEntity.updateOne({
-            _id: id
-        }, { $push: { conversations: newConversation } });
+        return __awaiter(this, void 0, void 0, function () {
+            var leads;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, leads_schema_1.leadsEntity.create({})];
+                    case 1:
+                        leads = _a.sent();
+                        newConversation.leads = leads === null || leads === void 0 ? void 0 : leads.id;
+                        return [2 /*return*/, metrics_schema_1.metricsEntity.findOneAndUpdate({
+                                _id: id
+                            }, { $push: { conversations: newConversation } })];
+                }
+            });
+        });
     };
     MetricsService.addEtapa = function (novaEtapa, metricId, conversationId) {
         return __awaiter(this, void 0, void 0, function () {
@@ -68,9 +81,7 @@ var MetricsService = /** @class */ (function () {
                     case 0: return [4 /*yield*/, metrics_schema_1.metricsEntity.findById(metricId)];
                     case 1:
                         metric = _a.sent();
-                        return [4 /*yield*/, (metric === null || metric === void 0 ? void 0 : metric.conversations.find(function (item) {
-                                return item._id == conversationId;
-                            }))];
+                        return [4 /*yield*/, (metric === null || metric === void 0 ? void 0 : metric.conversations.find(function (item) { return item._id == conversationId; }))];
                     case 2:
                         conversation = _a.sent();
                         if (!!conversation) {

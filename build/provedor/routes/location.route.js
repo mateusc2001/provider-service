@@ -109,3 +109,23 @@ exports.locationRoute.put('/', function (req, res) { return __awaiter(void 0, vo
         }
     });
 }); });
+exports.locationRoute.get('/disponibility/lat/:lat/lng/:lng/provider-id/:providerId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                params = req.params;
+                return [4 /*yield*/, location_service_1.LocationService.verifyDisponibility(params.providerId, params.lat, params.lng)];
+            case 1:
+                _a.sent();
+                res.status(204).send();
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                res.status(404).send();
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });

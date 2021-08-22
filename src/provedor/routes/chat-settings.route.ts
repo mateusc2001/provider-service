@@ -16,7 +16,9 @@ chatSettingsRoute.get('/:userId', async (req: Request, res: Response) => {
 });
 
 chatSettingsRoute.put('/', async (req: Request, res: Response) => {
-    res.json(await ChatSettingsService.updateOne(req.body, req.body.id));
+    const chatSettingsId = req.body.id;
+    await ChatSettingsService.updateOne(req.body, chatSettingsId);
+    res.json(await ChatSettingsService.findByIdWithout(chatSettingsId));
 });
 
 chatSettingsRoute.put('/add/plan', async (req: Request, res: Response) => {
@@ -27,5 +29,7 @@ chatSettingsRoute.put('/add/plan', async (req: Request, res: Response) => {
 });
 
 chatSettingsRoute.get('/find/plans/:id', async (req: Request, res: Response) => {
-    res.json(await ChatSettingsService.findPlans(req.params.id));
+    const response: any = (await ChatSettingsService.findPlansByInternetProviderId(req.params.id));
+    response.chatSettings.plans.forEach((item: any) => item.id = item['_id']);
+    res.json(response.chatSettings.plans);
 });

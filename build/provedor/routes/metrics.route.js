@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.metricsRoute = void 0;
 var express_1 = __importDefault(require("express"));
 var metrics_service_1 = require("../service/metrics.service");
+var metrics_schema_1 = require("../schemas/metrics.schema");
 exports.metricsRoute = express_1.default.Router();
 exports.metricsRoute.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b;
@@ -101,15 +102,15 @@ exports.metricsRoute.put('/impressions', function (req, res) { return __awaiter(
         }
     });
 }); });
-exports.metricsRoute.put('/conversations', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.metricsRoute.put('/conversations/:metricId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var body, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
                 body = req.body;
-                if (!!!body.conversation) return [3 /*break*/, 2];
+                if (!!!body) return [3 /*break*/, 2];
                 _b = (_a = res).json;
-                return [4 /*yield*/, metrics_service_1.MetricsService.addConversation(body.conversation, body.id)];
+                return [4 /*yield*/, metrics_service_1.MetricsService.addConversation(body, req.params.metricId)];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [3 /*break*/, 3];
@@ -120,7 +121,7 @@ exports.metricsRoute.put('/conversations', function (req, res) { return __awaite
         }
     });
 }); });
-exports.metricsRoute.put('/conversations/etapa', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.metricsRoute.put('/conversations/add/etapa', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var body, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
@@ -128,6 +129,21 @@ exports.metricsRoute.put('/conversations/etapa', function (req, res) { return __
                 body = req.body;
                 _b = (_a = res).json;
                 return [4 /*yield*/, metrics_service_1.MetricsService.addEtapa(body.etapa, body.metricId, body.conversationId)];
+            case 1:
+                _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.metricsRoute.patch('/conversations/leads', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var body, conversationId, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                body = req.body;
+                conversationId = req.body.conversationId;
+                _b = (_a = res).json;
+                return [4 /*yield*/, metrics_schema_1.metricsEntity.updateOne({ 'conversations._id': conversationId }, { '$set': { 'conversations.$.leads': body } })];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];

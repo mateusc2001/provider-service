@@ -36,6 +36,7 @@ var location_route_1 = require("./provedor/routes/location.route");
 var chat_settings_route_1 = require("./provedor/routes/chat-settings.route");
 var login_route_1 = require("./provedor/routes/login.route");
 var body_parser_1 = __importDefault(require("body-parser"));
+var leads_route_1 = require("./provedor/routes/leads.route");
 var App = /** @class */ (function () {
     function App() {
         this.express = express_1.default();
@@ -56,7 +57,8 @@ var App = /** @class */ (function () {
         mongoose_1.default.connect(uri, {
             useUnifiedTopology: true,
             useNewUrlParser: true,
-            useCreateIndex: true
+            useCreateIndex: true,
+            useFindAndModify: false
         });
     };
     App.prototype.routes = function () {
@@ -82,6 +84,7 @@ var App = /** @class */ (function () {
         this.express.use(origemApi.concat('/location'), location_route_1.locationRoute);
         this.express.use(origemApi.concat('/chat-settings'), chat_settings_route_1.chatSettingsRoute);
         this.express.use(origemApi.concat('/login'), login_route_1.loginRoute);
+        this.express.use(origemApi.concat('/leads'), leads_route_1.leadsRoute);
     };
     return App;
 }());

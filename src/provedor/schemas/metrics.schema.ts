@@ -19,6 +19,10 @@ const metricsSchema = new Schema({
                 type: Schema.Types.String,
                 require: true
             },
+            leads: {
+                type: Schema.Types.ObjectId,
+                ref: 'leads'
+            },
             etapas: [
                 {
                     horario: { type: Schema.Types.Date, required: true, default: Date.now },

@@ -20,6 +20,10 @@ var metricsSchema = new mongoose_1.Schema({
                 type: mongoose_1.Schema.Types.String,
                 require: true
             },
+            leads: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'leads'
+            },
             etapas: [
                 {
                     horario: { type: mongoose_1.Schema.Types.Date, required: true, default: Date.now },

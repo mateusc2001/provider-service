@@ -12,4 +12,8 @@ export class UserService {
     public static findAll() {
         return userEntity.find();
     }
+
+    public static update(newUser: any, id: string) {
+        return userEntity.updateOne({ '_id': id }, newUser);
+    }
 }

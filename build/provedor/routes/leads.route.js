@@ -39,93 +39,45 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chatSettingsRoute = void 0;
+exports.leadsRoute = void 0;
 var express_1 = __importDefault(require("express"));
-var chat_settings_service_1 = require("../service/chat-settings.service");
-exports.chatSettingsRoute = express_1.default.Router();
-exports.chatSettingsRoute.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var leads_schema_1 = require("../schemas/leads.schema");
+exports.leadsRoute = express_1.default.Router();
+exports.leadsRoute.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
                 _b = (_a = res).json;
-                return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.findAll()];
+                return [4 /*yield*/, leads_schema_1.leadsEntity.find()];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
         }
     });
 }); });
-exports.chatSettingsRoute.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.leadsRoute.get('/:leadId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
                 _b = (_a = res).json;
-                return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.create(req.body)];
+                return [4 /*yield*/, leads_schema_1.leadsEntity.findById(req.params.leadId)];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
         }
     });
 }); });
-exports.chatSettingsRoute.get('/:userId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.leadsRoute.put('/:leadId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
                 _b = (_a = res).json;
-                return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.findById(req.params.userId)];
+                return [4 /*yield*/, leads_schema_1.leadsEntity.updateOne({ '_id': req.params.leadId }, req.body)];
             case 1:
                 _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
-        }
-    });
-}); });
-exports.chatSettingsRoute.put('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var chatSettingsId, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                chatSettingsId = req.body.id;
-                return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.updateOne(req.body, chatSettingsId)];
-            case 1:
-                _c.sent();
-                _b = (_a = res).json;
-                return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.findByIdWithout(chatSettingsId)];
-            case 2:
-                _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
-        }
-    });
-}); });
-exports.chatSettingsRoute.put('/add/plan', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var newPlan, id, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                newPlan = req.body.plan;
-                id = req.body.id;
-                return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.addPlan(newPlan, id)];
-            case 1:
-                _c.sent();
-                _b = (_a = res).json;
-                return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.findPlans(id)];
-            case 2:
-                _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
-        }
-    });
-}); });
-exports.chatSettingsRoute.get('/find/plans/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var response;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, chat_settings_service_1.ChatSettingsService.findPlansByInternetProviderId(req.params.id)];
-            case 1:
-                response = (_a.sent());
-                response.chatSettings.plans.forEach(function (item) { return item.id = item['_id']; });
-                res.json(response.chatSettings.plans);
                 return [2 /*return*/];
         }
     });

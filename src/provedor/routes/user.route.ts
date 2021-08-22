@@ -15,3 +15,9 @@ userRoute.post('/', async (req: Request, res: Response) => {
 userRoute.get('/:userId', async (req: Request, res: Response) => {
     res.json(await UserService.findById(req.params.userId));
 });
+
+userRoute.put('', async (req: Request, res: Response) => {
+    const userId = req.body.id;
+    await UserService.update(req.body, userId)
+    res.json(await UserService.findById(userId));
+});

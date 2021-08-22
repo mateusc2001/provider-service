@@ -14,6 +14,9 @@ var UserService = /** @class */ (function () {
     UserService.findAll = function () {
         return user_schema_1.userEntity.find();
     };
+    UserService.update = function (newUser, id) {
+        return user_schema_1.userEntity.updateOne({ '_id': id }, newUser);
+    };
     return UserService;
 }());
 exports.UserService = UserService;

@@ -5,7 +5,7 @@ export class ChatSettingsModel {
         public title: string,
         public primaryColor: string,
         public image: string,
-        public location: LocationFileDataModel,
+        public location: LocationFileDataModel[],
         public whatsappNumber: string,
         public whatsappMessage: string,
         public clientPageUrl: string,

@@ -35,10 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocationService = void 0;
 var location_file_data_schema_1 = require("../schemas/location-file-data.schema");
 var chat_settings_service_1 = require("./chat-settings.service");
+var internet_provider_entity_1 = require("../entity/internet-provider.entity");
 var LocationService = /** @class */ (function () {
     function LocationService() {
     }
@@ -70,6 +76,93 @@ var LocationService = /** @class */ (function () {
     LocationService.delete = function (id) {
         return location_file_data_schema_1.locationFileDataEntity.deleteOne({ _id: id });
     };
+    LocationService.verifyDisponibility = function (providerId, lat, lng) {
+        return __awaiter(this, void 0, void 0, function () {
+            var providerService, cordenadas, disponibility;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, internet_provider_entity_1.InternetProviderEntity.findLocationsByInternetProviderId(providerId)];
+                    case 1:
+                        providerService = _a.sent();
+                        cordenadas = providerService.chatSettings.location
+                            .map(function (location) { return location.coordinates; })
+                            .reduce(function (acc, cur) { return __spreadArray(__spreadArray([], acc), cur); }, []);
+                        disponibility = cordenadas
+                            .map(function (itens) { return itens.map(function (item) { return _this.point(item.lng, item.lat); }); })
+                            .some(function (item) { return LocationService
+                            .isInside(item, item.length, _this.point(lat, lng)); });
+                        if (!disponibility)
+                            throw new Error('Infelizmente não temos disponibilidade neste endereço.');
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    LocationService.point = function (x, y) {
+        return {
+            x: x,
+            y: y
+        };
+    };
+    LocationService.onSegment = function (p, q, r) {
+        if (q.x <= Math.max(p.x, r.x) &&
+            q.x >= Math.min(p.x, r.x) &&
+            q.y <= Math.max(p.y, r.y) &&
+            q.y >= Math.min(p.y, r.y)) {
+            return true;
+        }
+        return false;
+    };
+    LocationService.orientation = function (p, q, r) {
+        var val = (q.y - p.y) * (r.x - q.x)
+            - (q.x - p.x) * (r.y - q.y);
+        if (val == 0) {
+            return 0; // colinear
+        }
+        return (val > 0) ? 1 : 2; // clock or counterclock wise
+    };
+    LocationService.doIntersect = function (p1, q1, p2, q2) {
+        var o1 = this.orientation(p1, q1, p2);
+        var o2 = this.orientation(p1, q1, q2);
+        var o3 = this.orientation(p2, q2, p1);
+        var o4 = this.orientation(p2, q2, q1);
+        if (o1 != o2 && o3 != o4) {
+            return true;
+        }
+        if (o1 == 0 && this.onSegment(p1, p2, q1)) {
+            return true;
+        }
+        if (o2 == 0 && this.onSegment(p1, q2, q1)) {
+            return true;
+        }
+        if (o3 == 0 && this.onSegment(p2, p1, q2)) {
+            return true;
+        }
+        if (o4 == 0 && this.onSegment(p2, q1, q2)) {
+            return true;
+        }
+        return false;
+    };
+    LocationService.isInside = function (polygon, n, p) {
+        if (n < 3) {
+            return false;
+        }
+        var extreme = this.point(this.INF, p.y);
+        var count = 0, i = 0;
+        do {
+            var next = (i + 1) % n;
+            if (this.doIntersect(polygon[i], polygon[next], p, extreme)) {
+                if (this.orientation(polygon[i], p, polygon[next]) == 0) {
+                    return this.onSegment(polygon[i], p, polygon[next]);
+                }
+                count++;
+            }
+            i = next;
+        } while (i != 0);
+        return (count % 2 == 1);
+    };
+    LocationService.INF = 10000;
     return LocationService;
 }());
 exports.LocationService = LocationService;
