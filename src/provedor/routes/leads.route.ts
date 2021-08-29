@@ -14,3 +14,7 @@ leadsRoute.get('/:leadId', async (req: Request, res: Response) => {
 leadsRoute.put('/:leadId', async (req: Request, res: Response) => {
     res.json(await leadsEntity.updateOne({ '_id': req.params.leadId }, req.body));
 });
+
+leadsRoute.put('/select-plan/lead-id/:leadId', async (req: Request, res: Response) => {
+    res.json(await leadsEntity.updateOne({ '_id': req.params.leadId }, req.body));
+});

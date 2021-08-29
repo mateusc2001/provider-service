@@ -1,6 +1,16 @@
 import {Schema, model} from 'mongoose'
 
 const leadsSchema = new Schema({
+    planoSelecionado: {
+        id: Schema.Types.String,
+        title: Schema.Types.String,
+        price: Schema.Types.Number,
+        periodoDeCobranca: Schema.Types.String,
+        speed: Schema.Types.Number,
+        color: Schema.Types.String,
+        contemplate: [Schema.Types.String],
+        notContemplate: [Schema.Types.String]
+    },
     nome: Schema.Types.String,
     cpf: Schema.Types.String,
     celular: Schema.Types.String,

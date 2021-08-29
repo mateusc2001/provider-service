@@ -25,11 +25,11 @@ locationRoute.put('/', async (req: Request, res: Response) => {
     res.json(await LocationService.update(req.body));
 });
 
-locationRoute.get('/disponibility/lat/:lat/lng/:lng/provider-id/:providerId', async (req: Request, res: Response) => {
+locationRoute.get('/disponibility/lat/:lat/lng/:lng/provider-id/:providerId/conversation-id/:conversationid', async (req: Request, res: Response) => {
 
     try {
         const params = req.params;
-        await LocationService.verifyDisponibility(params.providerId, params.lat, params.lng);
+        await LocationService.verifyDisponibility(params.providerId, params.lat, params.lng, params.conversationid);
         res.status(204).send();
     } catch (err) {
         res.status(404).send();

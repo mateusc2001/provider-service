@@ -82,6 +82,9 @@ internetProviderRoute.put('/add/user/:providerId', async (req: Request, res: Res
 });
 
 internetProviderRoute.get('', async (req: Request, res: Response) => {
+    const nome = 'Mateus Camargo';
+    console.log(nome);
+
     res.json(await internetProviderEntity.find()
         .select(['metrics', 'providerSettings', 'chatSettings', 'id'])
         .populate('metrics')
@@ -90,13 +93,37 @@ internetProviderRoute.get('', async (req: Request, res: Response) => {
 });
 
 internetProviderRoute.get('/chat/layout-settings/:providerId', async (req: Request, res: Response) => {
-    const internetProvider = await internetProviderEntity.findById(req.params.providerId).populate(
+    const internetProvider = await internetProviderEntity.findById(req.params.providerId)
+        .select('metrics')
+        .populate(
         {
             path: 'chatSettings',
-            select: ['image', 'primaryColor']
+            select: ['image', 'primaryColor', '_id', 'clientPageUrl', 'whatsappMessage', 'whatsappNumber', 'title']
         }
-
     );
-    res.json(internetProvider?.chatSettings);
+    if (!!internetProvider) {
+        const response = {
+            chatSettings: internetProvider.chatSettings,
+            metricId: internetProvider.metrics
+        }
+        res.json(response);
+    } else {
+        res.status(404).json(
+            {
+                error: 'Provedor não encontrado.'
+            }
+        );
+    }
+});
+
+internetProviderRoute.get('/findAll/users/:providerId', async (req, res) => {
+    const response = await internetProviderEntity.findById(req.params.providerId)
+        .populate(
+            {
+                path: 'users',
+                select: ['firstName', 'lastName', 'username']
+            }
+        );
+    res.json(!!response ? response.users : []);
 });
 

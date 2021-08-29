@@ -37,6 +37,7 @@ var chat_settings_route_1 = require("./provedor/routes/chat-settings.route");
 var login_route_1 = require("./provedor/routes/login.route");
 var body_parser_1 = __importDefault(require("body-parser"));
 var leads_route_1 = require("./provedor/routes/leads.route");
+var conversation_route_1 = require("./provedor/routes/conversation.route");
 var App = /** @class */ (function () {
     function App() {
         this.express = express_1.default();
@@ -76,15 +77,15 @@ var App = /** @class */ (function () {
                 break;
         }
         var origemApi = "/" + urlOrigem + "/forcebot";
-        // console.log(`Origem API: `, origemApi);
-        this.express.use(origemApi.concat('/internet-provider'), internet_provider_route_1.internetProviderRoute);
-        this.express.use(origemApi.concat('/metrics'), metrics_route_1.metricsRoute);
         this.express.use(origemApi.concat('/user'), user_route_1.userRoute);
-        this.express.use(origemApi.concat('/internet-provider-settings'), internet_provider_settings_route_1.internetProviderSettingsRoute);
-        this.express.use(origemApi.concat('/location'), location_route_1.locationRoute);
-        this.express.use(origemApi.concat('/chat-settings'), chat_settings_route_1.chatSettingsRoute);
-        this.express.use(origemApi.concat('/login'), login_route_1.loginRoute);
         this.express.use(origemApi.concat('/leads'), leads_route_1.leadsRoute);
+        this.express.use(origemApi.concat('/login'), login_route_1.loginRoute);
+        this.express.use(origemApi.concat('/metrics'), metrics_route_1.metricsRoute);
+        this.express.use(origemApi.concat('/location'), location_route_1.locationRoute);
+        this.express.use(origemApi.concat('/conversation'), conversation_route_1.conversationRoute);
+        this.express.use(origemApi.concat('/chat-settings'), chat_settings_route_1.chatSettingsRoute);
+        this.express.use(origemApi.concat('/internet-provider'), internet_provider_route_1.internetProviderRoute);
+        this.express.use(origemApi.concat('/internet-provider-settings'), internet_provider_settings_route_1.internetProviderSettingsRoute);
     };
     return App;
 }());

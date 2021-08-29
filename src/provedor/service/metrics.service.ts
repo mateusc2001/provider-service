@@ -1,5 +1,6 @@
 import { metricsEntity } from "../schemas/metrics.schema";
 import {leadsEntity} from "../schemas/leads.schema";
+import * as Mongoose from "mongoose";
 
 export class MetricsService {
     public static create(newMetric: any) {
@@ -7,11 +8,14 @@ export class MetricsService {
     }
 
     public static findAll() {
-        return metricsEntity.find();
+        return metricsEntity.find()
+            .populate('conversations')
+            .populate('leads');
     }
 
     public static findById(id: string) {
         return metricsEntity.findById(id)
+            .populate('conversations')
             .populate('leads');
     }
 
@@ -24,14 +28,12 @@ export class MetricsService {
         );
     }
 
-    public static async addConversation(newConversation: any, id: string) {
-        const leads = await leadsEntity.create({});
-        newConversation.leads = leads?.id;
+    public static async addConversation(conversationId: any, id: string) {
         return metricsEntity.findOneAndUpdate(
             {
                 _id: id
             },
-            { $push: { conversations: newConversation } }
+            { $push: { conversations: conversationId } }
         );
     }
 

@@ -144,13 +144,18 @@ exports.internetProviderRoute.put('/add/user/:providerId', function (req, res) {
     });
 }); });
 exports.internetProviderRoute.get('', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b;
+    var nome, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
+                nome = 'Mateus Camargo';
+                console.log(nome);
                 _b = (_a = res).json;
                 return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity.find()
-                        .populate(['metrics', 'providerSettings', 'chatSettings', 'id'])];
+                        .select(['metrics', 'providerSettings', 'chatSettings', 'id'])
+                        .populate('metrics')
+                        .populate('providerSettings')
+                        .populate('chatSettings')];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
@@ -158,16 +163,45 @@ exports.internetProviderRoute.get('', function (req, res) { return __awaiter(voi
     });
 }); });
 exports.internetProviderRoute.get('/chat/layout-settings/:providerId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var internetProvider;
+    var internetProvider, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity.findById(req.params.providerId).populate({
+            case 0: return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity.findById(req.params.providerId)
+                    .select('metrics')
+                    .populate({
                     path: 'chatSettings',
-                    select: ['image', 'primaryColor']
+                    select: ['image', 'primaryColor', '_id', 'clientPageUrl', 'whatsappMessage', 'whatsappNumber', 'title']
                 })];
             case 1:
                 internetProvider = _a.sent();
-                res.json(internetProvider === null || internetProvider === void 0 ? void 0 : internetProvider.chatSettings);
+                if (!!internetProvider) {
+                    response = {
+                        chatSettings: internetProvider.chatSettings,
+                        metricId: internetProvider.metrics
+                    };
+                    res.json(response);
+                }
+                else {
+                    res.status(404).json({
+                        error: 'Provedor não encontrado.'
+                    });
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.internetProviderRoute.get('/findAll/users/:providerId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, internet_provider_schema_1.internetProviderEntity.findById(req.params.providerId)
+                    .populate({
+                    path: 'users',
+                    select: ['firstName', 'lastName', 'username']
+                })];
+            case 1:
+                response = _a.sent();
+                res.json(!!response ? response.users : []);
                 return [2 /*return*/];
         }
     });

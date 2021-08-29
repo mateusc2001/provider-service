@@ -23,6 +23,68 @@ var InternetProviderEntity = /** @class */ (function () {
             select: 'plans'
         });
     };
+    InternetProviderEntity.findConversationsWithEtapaBiggerThan = function (internetProviderId, etapa) {
+        return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
+            .populate({
+            path: 'metrics',
+            populate: {
+                path: 'conversations',
+                match: {
+                    'etapas.etapa': { $gte: etapa }
+                }
+            }
+        });
+    };
+    InternetProviderEntity.findConversationsWithVenda = function (internetProviderId) {
+        return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
+            .populate({
+            path: 'metrics',
+            populate: {
+                path: 'conversations',
+                match: {
+                    'etapas.etapa': { $gte: 11 }
+                },
+                populate: {
+                    path: 'leads',
+                    select: ['nome', 'celular', 'email', 'cpf', 'localidade', 'bairro', 'cep']
+                }
+            }
+        });
+    };
+    InternetProviderEntity.findConversationsWithDisponibility = function (internetProviderId) {
+        return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
+            .populate({
+            path: 'metrics',
+            populate: {
+                path: 'conversations',
+                match: {
+                    'hasDisponibility': true
+                }
+            }
+        });
+    };
+    InternetProviderEntity.findConversationsWithoutDisponibility = function (internetProviderId) {
+        return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
+            .populate({
+            path: 'metrics',
+            populate: {
+                path: 'conversations',
+                match: {
+                    'hasDisponibility': false
+                }
+            }
+        });
+    };
+    InternetProviderEntity.findConversationsLeads = function (internetProviderId) {
+        return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
+            .populate({
+            path: 'metrics',
+            populate: {
+                path: 'conversations',
+                match: { $or: [{ hasDisponibility: false }, { hasDisponibility: null }] }
+            }
+        });
+    };
     return InternetProviderEntity;
 }());
 exports.InternetProviderEntity = InternetProviderEntity;

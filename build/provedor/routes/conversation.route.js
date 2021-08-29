@@ -39,93 +39,81 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.locationRoute = void 0;
+exports.conversationRoute = void 0;
 var express_1 = __importDefault(require("express"));
-var location_service_1 = require("../service/location.service");
-exports.locationRoute = express_1.default.Router();
-exports.locationRoute.post('/:chatSettingsId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var newLocation, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                newLocation = req.body;
-                _b = (_a = res).json;
-                return [4 /*yield*/, location_service_1.LocationService.create(newLocation, req.params.chatSettingsId)];
-            case 1:
-                _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
-        }
-    });
-}); });
-exports.locationRoute.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var conversation_schema_1 = require("../schemas/conversation.schema");
+var leads_schema_1 = require("../schemas/leads.schema");
+var metrics_service_1 = require("../service/metrics.service");
+exports.conversationRoute = express_1.default.Router();
+exports.conversationRoute.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
                 _b = (_a = res).json;
-                return [4 /*yield*/, location_service_1.LocationService.findAll()];
+                return [4 /*yield*/, conversation_schema_1.conversationEntity.find()];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
         }
     });
 }); });
-exports.locationRoute.get('/:locationId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.conversationRoute.get('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
                 _b = (_a = res).json;
-                return [4 /*yield*/, location_service_1.LocationService.findById(req.params.locationId)];
+                return [4 /*yield*/, conversation_schema_1.conversationEntity.findById(req.params.id)];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
         }
     });
 }); });
-exports.locationRoute.delete('/:locationId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                _b = (_a = res).json;
-                return [4 /*yield*/, location_service_1.LocationService.delete(req.params.locationId)];
-            case 1:
-                _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
-        }
-    });
-}); });
-exports.locationRoute.put('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                _b = (_a = res).json;
-                return [4 /*yield*/, location_service_1.LocationService.update(req.body)];
-            case 1:
-                _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
-        }
-    });
-}); });
-exports.locationRoute.get('/disponibility/lat/:lat/lng/:lng/provider-id/:providerId/conversation-id/:conversationid', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, err_1;
+exports.conversationRoute.put('/page/:page/metric-id/:metricId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var page, metricId, leads, newConversation;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                params = req.params;
-                return [4 /*yield*/, location_service_1.LocationService.verifyDisponibility(params.providerId, params.lat, params.lng, params.conversationid)];
+                page = req.params.page;
+                metricId = req.params.metricId;
+                return [4 /*yield*/, leads_schema_1.leadsEntity.create({})];
             case 1:
-                _a.sent();
-                res.status(204).send();
-                return [3 /*break*/, 3];
+                leads = _a.sent();
+                return [4 /*yield*/, conversation_schema_1.conversationEntity.create(ConversationMapper.buildNewConversation(leads.id, 1, page))];
             case 2:
-                err_1 = _a.sent();
-                res.status(404).send();
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                newConversation = _a.sent();
+                metrics_service_1.MetricsService.addConversation(newConversation.id, metricId)
+                    .then(function () { return res.json(newConversation); });
+                return [2 /*return*/];
         }
     });
 }); });
+exports.conversationRoute.put('/etapa/:etapa/conversation-id/:conversationId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _b = (_a = res).json;
+                return [4 /*yield*/, conversation_schema_1.conversationEntity.updateOne({
+                        _id: req.params.conversationId
+                    }, { $push: { etapas: { etapa: req.params.etapa } } })];
+            case 1:
+                _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); });
+var ConversationMapper = /** @class */ (function () {
+    function ConversationMapper() {
+    }
+    ConversationMapper.buildNewConversation = function (leadId, etapa, page) {
+        return {
+            page: page,
+            leads: leadId,
+            etapas: []
+        };
+    };
+    return ConversationMapper;
+}());

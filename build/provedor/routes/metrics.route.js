@@ -43,6 +43,7 @@ exports.metricsRoute = void 0;
 var express_1 = __importDefault(require("express"));
 var metrics_service_1 = require("../service/metrics.service");
 var metrics_schema_1 = require("../schemas/metrics.schema");
+var internet_provider_service_1 = require("../service/internet-provider.service");
 exports.metricsRoute = express_1.default.Router();
 exports.metricsRoute.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b;
@@ -102,39 +103,6 @@ exports.metricsRoute.put('/impressions', function (req, res) { return __awaiter(
         }
     });
 }); });
-exports.metricsRoute.put('/conversations/:metricId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                body = req.body;
-                if (!!!body) return [3 /*break*/, 2];
-                _b = (_a = res).json;
-                return [4 /*yield*/, metrics_service_1.MetricsService.addConversation(body, req.params.metricId)];
-            case 1:
-                _b.apply(_a, [_c.sent()]);
-                return [3 /*break*/, 3];
-            case 2:
-                res.status(500).json({ errorMessage: 'Erro interno.' });
-                _c.label = 3;
-            case 3: return [2 /*return*/];
-        }
-    });
-}); });
-exports.metricsRoute.put('/conversations/add/etapa', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                body = req.body;
-                _b = (_a = res).json;
-                return [4 /*yield*/, metrics_service_1.MetricsService.addEtapa(body.etapa, body.metricId, body.conversationId)];
-            case 1:
-                _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
-        }
-    });
-}); });
 exports.metricsRoute.patch('/conversations/leads', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var body, conversationId, _a, _b;
     return __generator(this, function (_c) {
@@ -146,6 +114,59 @@ exports.metricsRoute.patch('/conversations/leads', function (req, res) { return 
                 return [4 /*yield*/, metrics_schema_1.metricsEntity.updateOne({ 'conversations._id': conversationId }, { '$set': { 'conversations.$.leads': body } })];
             case 1:
                 _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.metricsRoute.get('/chart-metric/first-chart/:internetProvider', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var providerId, conversasIniciadas, semOportunidades, oportunidades, vendas, leads, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                providerId = req.params.internetProvider;
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithEtapaBiggerThan(providerId, 2)];
+            case 1:
+                conversasIniciadas = (_a.sent());
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithoutDisponibility(providerId)];
+            case 2:
+                semOportunidades = (_a.sent());
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithDisponibility(providerId)];
+            case 3:
+                oportunidades = (_a.sent());
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithEtapaBiggerThan(providerId, 11)];
+            case 4:
+                vendas = (_a.sent());
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsLeads(providerId)];
+            case 5:
+                leads = (_a.sent());
+                response = {
+                    firstChart: {
+                        conversasIniciadas: !!conversasIniciadas ? conversasIniciadas.metrics.conversations.length : -1,
+                        oportunidades: !!oportunidades ? oportunidades.metrics.conversations.length : -1,
+                        vendas: !!vendas ? vendas.metrics.conversations.length : -1
+                    },
+                    secondChart: {
+                        conversasIniciadas: !!conversasIniciadas ? conversasIniciadas.metrics.conversations.length : -1,
+                        semOportunidades: !!semOportunidades ? semOportunidades.metrics.conversations.length : -1,
+                        leads: !!leads ? leads.metrics.conversations.length : -1
+                    }
+                };
+                res.json(response);
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.metricsRoute.get('/vendas/:providerId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var providerId, vendas, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                providerId = req.params.providerId;
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithVenda(providerId)];
+            case 1:
+                vendas = (_a.sent());
+                response = vendas.metrics.conversations.map(function (conversation) { return conversation.leads; });
+                res.json(response);
                 return [2 /*return*/];
         }
     });

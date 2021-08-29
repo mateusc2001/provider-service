@@ -2,6 +2,8 @@ import { locationFileDataEntity } from "../schemas/location-file-data.schema";
 import { ChatSettingsService } from "./chat-settings.service";
 import {ChatSettingsModel} from "../model/chat-settings.model";
 import {InternetProviderEntity} from "../entity/internet-provider.entity";
+import {leadsEntity} from "../schemas/leads.schema";
+import {conversationEntity} from "../schemas/conversation.schema";
 
 export class LocationService {
 
@@ -31,7 +33,7 @@ export class LocationService {
         return locationFileDataEntity.deleteOne({ _id: id });
     }
 
-    public static async verifyDisponibility(providerId: string, lat: string, lng: string) {
+    public static async verifyDisponibility(providerId: string, lat: string, lng: string, conversationId: string) {
         const providerService = await InternetProviderEntity.findLocationsByInternetProviderId(providerId);
 
         const cordenadas = providerService.chatSettings.location
@@ -42,6 +44,8 @@ export class LocationService {
             .map((itens: any[]) => itens.map((item: any) => this.point(item.lng, item.lat)))
             .some((item: any) => LocationService
                 .isInside(item, item.length, this.point(lat, lng)));
+
+        await conversationEntity.updateOne({ _id: conversationId }, { hasDisponibility: disponibility });
 
         if (!disponibility) throw new Error('Infelizmente não temos disponibilidade neste endereço.');
     }

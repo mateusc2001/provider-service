@@ -82,3 +82,16 @@ exports.leadsRoute.put('/:leadId', function (req, res) { return __awaiter(void 0
         }
     });
 }); });
+exports.leadsRoute.put('/select-plan/lead-id/:leadId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _b = (_a = res).json;
+                return [4 /*yield*/, leads_schema_1.leadsEntity.updateOne({ '_id': req.params.leadId }, req.body)];
+            case 1:
+                _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); });

@@ -14,25 +14,8 @@ var metricsSchema = new mongoose_1.Schema({
     ],
     conversations: [
         {
-            id: mongoose_1.Schema.Types.ObjectId,
-            hasOportunity: mongoose_1.Schema.Types.Boolean,
-            page: {
-                type: mongoose_1.Schema.Types.String,
-                require: true
-            },
-            leads: {
-                type: mongoose_1.Schema.Types.ObjectId,
-                ref: 'leads'
-            },
-            etapas: [
-                {
-                    horario: { type: mongoose_1.Schema.Types.Date, required: true, default: Date.now },
-                    etapa: {
-                        type: mongoose_1.Schema.Types.Number,
-                        require: true
-                    }
-                }
-            ]
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'conversation'
         }
     ]
 }, {

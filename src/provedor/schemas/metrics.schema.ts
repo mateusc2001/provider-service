@@ -13,25 +13,8 @@ const metricsSchema = new Schema({
     ],
     conversations: [
         {
-            id: Schema.Types.ObjectId,
-            hasOportunity: Schema.Types.Boolean,
-            page: {
-                type: Schema.Types.String,
-                require: true
-            },
-            leads: {
-                type: Schema.Types.ObjectId,
-                ref: 'leads'
-            },
-            etapas: [
-                {
-                    horario: { type: Schema.Types.Date, required: true, default: Date.now },
-                    etapa: {
-                        type: Schema.Types.Number,
-                        require: true
-                    }
-                }
-            ]
+            type: Schema.Types.ObjectId,
+            ref: 'conversation'
         }
     ]
 }, {

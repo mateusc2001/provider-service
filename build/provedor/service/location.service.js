@@ -45,6 +45,7 @@ exports.LocationService = void 0;
 var location_file_data_schema_1 = require("../schemas/location-file-data.schema");
 var chat_settings_service_1 = require("./chat-settings.service");
 var internet_provider_entity_1 = require("../entity/internet-provider.entity");
+var conversation_schema_1 = require("../schemas/conversation.schema");
 var LocationService = /** @class */ (function () {
     function LocationService() {
     }
@@ -76,7 +77,7 @@ var LocationService = /** @class */ (function () {
     LocationService.delete = function (id) {
         return location_file_data_schema_1.locationFileDataEntity.deleteOne({ _id: id });
     };
-    LocationService.verifyDisponibility = function (providerId, lat, lng) {
+    LocationService.verifyDisponibility = function (providerId, lat, lng, conversationId) {
         return __awaiter(this, void 0, void 0, function () {
             var providerService, cordenadas, disponibility;
             var _this = this;
@@ -92,6 +93,9 @@ var LocationService = /** @class */ (function () {
                             .map(function (itens) { return itens.map(function (item) { return _this.point(item.lng, item.lat); }); })
                             .some(function (item) { return LocationService
                             .isInside(item, item.length, _this.point(lat, lng)); });
+                        return [4 /*yield*/, conversation_schema_1.conversationEntity.updateOne({ _id: conversationId }, { hasDisponibility: disponibility })];
+                    case 2:
+                        _a.sent();
                         if (!disponibility)
                             throw new Error('Infelizmente não temos disponibilidade neste endereço.');
                         return [2 /*return*/];
