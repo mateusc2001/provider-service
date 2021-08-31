@@ -8,20 +8,23 @@ var InternetProviderService = /** @class */ (function () {
     InternetProviderService.findPlansByInternetProviderId = function (providerId) {
         return internet_provider_entity_1.InternetProviderEntity.findPlansByInternetProviderId(providerId);
     };
-    InternetProviderService.findConversationsWithEtapaBiggerThan = function (providerId, etapa) {
-        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithEtapaBiggerThan(providerId, etapa);
+    InternetProviderService.findConversationsWithEtapaBiggerThan = function (providerId, etapa, start, end) {
+        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithEtapaBiggerThan(providerId, etapa, start, end);
     };
-    InternetProviderService.findConversationsWithDisponibility = function (providerId) {
-        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithDisponibility(providerId);
+    InternetProviderService.findConversationsWithDisponibility = function (providerId, start, end) {
+        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithDisponibility(providerId, start, end);
     };
-    InternetProviderService.findConversationsWithoutDisponibility = function (providerId) {
-        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithoutDisponibility(providerId);
+    InternetProviderService.findConversationsWithoutDisponibility = function (providerId, start, end) {
+        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithoutDisponibility(providerId, start, end);
     };
-    InternetProviderService.findConversationsLeads = function (providerId) {
-        return internet_provider_entity_1.InternetProviderEntity.findConversationsLeads(providerId);
+    InternetProviderService.findConversationsLeads = function (providerId, start, end, page, count) {
+        return internet_provider_entity_1.InternetProviderEntity.findConversationsLeads(providerId, start, end, page, count);
     };
-    InternetProviderService.findConversationsWithVenda = function (providerId) {
-        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithVenda(providerId);
+    InternetProviderService.findConversationsWithVenda = function (providerId, start, end, page, count) {
+        return internet_provider_entity_1.InternetProviderEntity.findConversationsWithVenda(providerId, start, end, page, count);
+    };
+    InternetProviderService.findPlansInVenda = function (providerId, start, end, page, count) {
+        return internet_provider_entity_1.InternetProviderEntity.findPlansInVenda(providerId, start, end, page, count);
     };
     return InternetProviderService;
 }());

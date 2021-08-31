@@ -26,69 +26,124 @@ export class InternetProviderEntity {
             );
     }
 
-    public static findConversationsWithEtapaBiggerThan(internetProviderId: string, etapa: number): any {
+    public static findConversationsWithEtapaBiggerThan(internetProviderId: string, etapa: number, start: string, end: string): any {
         return internetProviderEntity.findById(internetProviderId)
             .populate({
                 path: 'metrics',
                 populate: {
                     path: 'conversations',
                     match: {
-                        'etapas.etapa': {$gte: etapa}
+                        'etapas.etapa': {$gte: etapa},
+                        'createdAt': {
+                            $gte: new Date(start),
+                            $lt: new Date(end)
+                        }
                     }
                 }
             })
     }
 
-    public static findConversationsWithVenda(internetProviderId: string): any {
+    public static findConversationsWithVenda(internetProviderId: string, start: string, end: string, page: number, count: number): any {
         return internetProviderEntity.findById(internetProviderId)
             .populate({
                 path: 'metrics',
                 populate: {
                     path: 'conversations',
                     match: {
-                        'etapas.etapa': {$gte: 11}
+                        'etapas.etapa': {$gte: 11},
+                        'createdAt': {
+                            $gte: new Date(start),
+                            $lt: new Date(end)
+                        }
                     },
                     populate: {
                         path: 'leads',
                         select: ['nome', 'celular', 'email', 'cpf', 'localidade', 'bairro', 'cep']
+                    },
+                    options: {
+                        limit: count,
+                        skip: count * (page - 1)
                     }
                 }
             });
     }
 
-    public static findConversationsWithDisponibility(internetProviderId: string): any {
+    public static findConversationsWithDisponibility(internetProviderId: string, start: string, end: string): any {
         return internetProviderEntity.findById(internetProviderId)
             .populate({
                 path: 'metrics',
                 populate: {
                     path: 'conversations',
                     match: {
-                        'hasDisponibility': true
+                        'hasDisponibility': true,
+                        'createdAt': {
+                            $gte: new Date(start),
+                            $lt: new Date(end)
+                        }
                     }
                 }
             });
     }
 
-    public static findConversationsWithoutDisponibility(internetProviderId: string): any {
+    public static findConversationsWithoutDisponibility(internetProviderId: string, start: string, end: string): any {
         return internetProviderEntity.findById(internetProviderId)
             .populate({
                 path: 'metrics',
                 populate: {
                     path: 'conversations',
                     match: {
-                        'hasDisponibility': false
+                        'hasDisponibility': false,
+                        'createdAt': {
+                            $gte: new Date(start),
+                            $lt: new Date(end)
+                        }
                     }
                 }
             });
     }
 
-    public static findConversationsLeads(internetProviderId: string): any {
+    public static findConversationsLeads(internetProviderId: string, start: string, end: string, page: number, count: number): any {
         return internetProviderEntity.findById(internetProviderId)
             .populate({
                 path: 'metrics',
                 populate: {
                     path: 'conversations',
-                    match: {$or: [{hasDisponibility: false}, {hasDisponibility: null}]}
+                    match: {
+                        $or: [{hasDisponibility: false}, {hasDisponibility: null}],
+                        'createdAt': {
+                            $gte: new Date(start),
+                            $lt: new Date(end)
+                        }
+                    },
+                    options: {
+                        limit: count,
+                        skip: count * (page - 1)
+                    }
+                }
+            });
+    }
+
+    public static findPlansInVenda(internetProviderId: string, start: string, end: string, page: number, count: number): any {
+        return internetProviderEntity.findById(internetProviderId)
+            .populate({
+                path: 'metrics',
+                populate: {
+                    path: 'conversations',
+                    match: {
+                        'etapas.etapa': {$gte: 11},
+                        'createdAt': {
+                            $gte: new Date(start),
+                            $lt: new Date(end)
+                        }
+                    },
+                    populate: {
+                        path: 'leads',
+                        select: ['planoSelecionado']
+                    },
+                    options: {
+                        limit: count,
+                        skip: count * (page - 1)
+                    }
                 }
             });
     }

@@ -23,65 +23,119 @@ var InternetProviderEntity = /** @class */ (function () {
             select: 'plans'
         });
     };
-    InternetProviderEntity.findConversationsWithEtapaBiggerThan = function (internetProviderId, etapa) {
+    InternetProviderEntity.findConversationsWithEtapaBiggerThan = function (internetProviderId, etapa, start, end) {
         return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
             .populate({
             path: 'metrics',
             populate: {
                 path: 'conversations',
                 match: {
-                    'etapas.etapa': { $gte: etapa }
+                    'etapas.etapa': { $gte: etapa },
+                    'createdAt': {
+                        $gte: new Date(start),
+                        $lt: new Date(end)
+                    }
                 }
             }
         });
     };
-    InternetProviderEntity.findConversationsWithVenda = function (internetProviderId) {
+    InternetProviderEntity.findConversationsWithVenda = function (internetProviderId, start, end, page, count) {
         return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
             .populate({
             path: 'metrics',
             populate: {
                 path: 'conversations',
                 match: {
-                    'etapas.etapa': { $gte: 11 }
+                    'etapas.etapa': { $gte: 11 },
+                    'createdAt': {
+                        $gte: new Date(start),
+                        $lt: new Date(end)
+                    }
                 },
                 populate: {
                     path: 'leads',
                     select: ['nome', 'celular', 'email', 'cpf', 'localidade', 'bairro', 'cep']
+                },
+                options: {
+                    limit: count,
+                    skip: count * (page - 1)
                 }
             }
         });
     };
-    InternetProviderEntity.findConversationsWithDisponibility = function (internetProviderId) {
+    InternetProviderEntity.findConversationsWithDisponibility = function (internetProviderId, start, end) {
         return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
             .populate({
             path: 'metrics',
             populate: {
                 path: 'conversations',
                 match: {
-                    'hasDisponibility': true
+                    'hasDisponibility': true,
+                    'createdAt': {
+                        $gte: new Date(start),
+                        $lt: new Date(end)
+                    }
                 }
             }
         });
     };
-    InternetProviderEntity.findConversationsWithoutDisponibility = function (internetProviderId) {
+    InternetProviderEntity.findConversationsWithoutDisponibility = function (internetProviderId, start, end) {
         return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
             .populate({
             path: 'metrics',
             populate: {
                 path: 'conversations',
                 match: {
-                    'hasDisponibility': false
+                    'hasDisponibility': false,
+                    'createdAt': {
+                        $gte: new Date(start),
+                        $lt: new Date(end)
+                    }
                 }
             }
         });
     };
-    InternetProviderEntity.findConversationsLeads = function (internetProviderId) {
+    InternetProviderEntity.findConversationsLeads = function (internetProviderId, start, end, page, count) {
         return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
             .populate({
             path: 'metrics',
             populate: {
                 path: 'conversations',
-                match: { $or: [{ hasDisponibility: false }, { hasDisponibility: null }] }
+                match: {
+                    $or: [{ hasDisponibility: false }, { hasDisponibility: null }],
+                    'createdAt': {
+                        $gte: new Date(start),
+                        $lt: new Date(end)
+                    }
+                },
+                options: {
+                    limit: count,
+                    skip: count * (page - 1)
+                }
+            }
+        });
+    };
+    InternetProviderEntity.findPlansInVenda = function (internetProviderId, start, end, page, count) {
+        return internet_provider_schema_1.internetProviderEntity.findById(internetProviderId)
+            .populate({
+            path: 'metrics',
+            populate: {
+                path: 'conversations',
+                match: {
+                    'etapas.etapa': { $gte: 11 },
+                    'createdAt': {
+                        $gte: new Date(start),
+                        $lt: new Date(end)
+                    }
+                },
+                populate: {
+                    path: 'leads',
+                    select: ['planoSelecionado']
+                },
+                options: {
+                    limit: count,
+                    skip: count * (page - 1)
+                }
             }
         });
     };

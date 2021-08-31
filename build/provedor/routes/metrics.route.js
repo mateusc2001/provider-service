@@ -118,25 +118,27 @@ exports.metricsRoute.patch('/conversations/leads', function (req, res) { return 
         }
     });
 }); });
-exports.metricsRoute.get('/chart-metric/first-chart/:internetProvider', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var providerId, conversasIniciadas, semOportunidades, oportunidades, vendas, leads, response;
+exports.metricsRoute.get('/chart-metric/first-chart/:internetProvider/start/:start/end/:end', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var providerId, start, end, conversasIniciadas, semOportunidades, oportunidades, vendas, leads, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 providerId = req.params.internetProvider;
-                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithEtapaBiggerThan(providerId, 2)];
+                start = req.params.start;
+                end = req.params.end;
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithEtapaBiggerThan(providerId, 2, start, end)];
             case 1:
                 conversasIniciadas = (_a.sent());
-                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithoutDisponibility(providerId)];
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithoutDisponibility(providerId, start, end)];
             case 2:
                 semOportunidades = (_a.sent());
-                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithDisponibility(providerId)];
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithDisponibility(providerId, start, end)];
             case 3:
                 oportunidades = (_a.sent());
-                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithEtapaBiggerThan(providerId, 11)];
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithEtapaBiggerThan(providerId, 11, start, end)];
             case 4:
                 vendas = (_a.sent());
-                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsLeads(providerId)];
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsLeads(providerId, start, end, 1, 2)];
             case 5:
                 leads = (_a.sent());
                 response = {
@@ -156,17 +158,51 @@ exports.metricsRoute.get('/chart-metric/first-chart/:internetProvider', function
         }
     });
 }); });
-exports.metricsRoute.get('/vendas/:providerId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var providerId, vendas, response;
+exports.metricsRoute.get('/vendas/:providerId/start/:start/end/:end/page/:page/count/:count', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var providerId, start, end, page, count, vendas, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 providerId = req.params.providerId;
-                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithVenda(providerId)];
+                start = req.params.start;
+                end = req.params.end;
+                page = Number(req.params.page);
+                count = Number(req.params.count);
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findConversationsWithVenda(providerId, start, end, page, count)];
             case 1:
                 vendas = (_a.sent());
                 response = vendas.metrics.conversations.map(function (conversation) { return conversation.leads; });
                 res.json(response);
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.metricsRoute.get('/vendas/planos/:providerId/start/:start/end/:end/page/:page/count/:count', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var providerId, start, end, page, count, vendas, planos, semRepetidos;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                providerId = req.params.providerId;
+                start = req.params.start;
+                end = req.params.end;
+                page = Number(req.params.page);
+                count = Number(req.params.count);
+                return [4 /*yield*/, internet_provider_service_1.InternetProviderService.findPlansInVenda(providerId, start, end, page, count)];
+            case 1:
+                vendas = (_a.sent());
+                planos = vendas.metrics.conversations.map(function (conversation) { return conversation.leads.planoSelecionado; });
+                semRepetidos = planos
+                    .filter(function (el, i) { return planos.map(function (elemento) { return elemento.id; }).indexOf(el.id) == i; })
+                    .map(function (plano) {
+                    return {
+                        totalVendidos: plano.totalVendido = planos.filter(function (plan) { return plan.id == plano.id; }).length,
+                        title: plano.title,
+                        price: plano.price,
+                        periodoDeCobranca: plano.periodoDeCobranca,
+                        speed: plano.speed
+                    };
+                });
+                res.json(semRepetidos);
                 return [2 /*return*/];
         }
     });

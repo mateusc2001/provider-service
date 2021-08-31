@@ -105,6 +105,11 @@ exports.conversationRoute.put('/etapa/:etapa/conversation-id/:conversationId', f
         }
     });
 }); });
+exports.conversationRoute.get('', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/];
+    });
+}); });
 var ConversationMapper = /** @class */ (function () {
     function ConversationMapper() {
     }
